@@ -1,0 +1,84 @@
+#include <stdio.h>
+
+#define BUTTONS 10
+#define CLOCKS 16
+
+char dir[BUTTONS][CLOCKS] = {   { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+								{ 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 },
+								{ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1 },
+								{ 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 },
+								{ 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0 },
+								{ 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+								{ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1 },
+								{ 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1 },
+								{ 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+								{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 }, };
+int list[CLOCKS];
+
+int user_min(int a, int b)
+{
+	return a < b ? a : b;
+}
+
+void set_clock(int index, int count, int value)
+{
+	int i;
+
+	for (i = 0; i < CLOCKS; i++)
+	{
+		list[i] += dir[index][i] * count * value;
+		if (list[i] < 3)
+			list[i] += 12;
+		if (list[i] > 12)
+			list[i] = list[i] % 12;
+	}
+}
+
+int process(int index, int count)
+{
+	int i, res = count;
+
+	for (i = 0; i < CLOCKS; i++)
+	{
+		if (list[i] != 12)
+		{
+			res = 0x7fffffff;
+			break;
+		}
+	}
+
+	if (index >= BUTTONS || res == count)
+		return res;
+
+	for (i = 0; i < 4; i++)
+	{
+		set_clock(index, i, 3);
+
+		res = user_min(res, process(index + 1, count + i));
+
+		set_clock(index, i, -3);
+	}
+
+	return res;
+}
+
+int main()
+{
+	int tc;
+	int i, res;
+
+	scanf("%d", &tc);
+	while (tc--)
+	{
+		for (i = 0; i < CLOCKS; i++)
+			scanf("%d", &list[i]);
+
+		res = process(0, 0);
+
+		if (res == 0x7fffffff)
+			res = -1;
+		printf("%d\n", res);
+	}
+
+	return 0;
+}
