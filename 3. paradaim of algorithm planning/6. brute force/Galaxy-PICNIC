@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+int map[10][10];
+int visit[10];
+int n, edge, res;
+
+int process(int count)
+{
+	int i, j, res = 0;
+
+	if (!count)
+		return 1;
+
+	for (i = 0; i < n; i++)
+	{
+		if (visit[i])
+		{
+			visit[i] = 0;
+
+			for (j = 0; j < n; j++)
+			{
+				if (map[i][j] && visit[j])
+				{
+					visit[j] = 0;
+
+					res += process(count - 2);
+
+					visit[j] = 1;
+				}
+			}
+
+			visit[i] = 1;
+			return res;
+		}
+	}
+	return res;
+}
+
+int main()
+{
+	int tc;
+	int i, j, s, e;
+
+	scanf("%d", &tc);
+	while (tc--)
+	{
+		scanf("%d %d", &n, &edge);
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < n; j++)
+				map[i][j] = 0;
+			visit[i] = 1;
+		}
+		for (i = 0; i < edge; i++)
+		{
+			scanf("%d %d", &s, &e);
+			map[s][e] = 1;
+			map[e][s] = 1;
+		}
+
+		printf("%d\n", process(n));
+	}
+
+	return 0;
+}
