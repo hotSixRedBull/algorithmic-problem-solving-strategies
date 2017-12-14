@@ -1,0 +1,157 @@
+#include <stdio.h>
+
+#define	CLOCK_SIZE	16
+#define	BUTTON_SIZE	10
+#define	INF	1050000
+#define	ADD	3
+#define	RMV	-3
+
+int clock[CLOCK_SIZE];
+int buttonCnt[BUTTON_SIZE];
+int cnt;
+int result;
+
+void add(int num, int type)
+{
+	if (clock[num] == 12 && type == ADD)
+		clock[num] = 3;
+	else if (clock[num] == 3 && type == RMV)
+		clock[num] = 12;
+	else
+		clock[num] += type;
+}
+void pushButton(int num, int type)
+{
+	if (type == ADD)
+		cnt++;
+	else if (type == RMV)
+		cnt--;
+	else
+		return;
+
+	buttonCnt[num] += type / 3;
+	if (num == 0) {
+		add(0, type);
+		add(1, type);
+		add(2, type);
+	}
+	else if (num == 1) {
+		add(3, type);
+		add(7, type);
+		add(9, type);
+		add(11, type);
+	}
+	else if (num == 2) {
+		add(4, type);
+		add(10, type);
+		add(14, type);
+		add(15, type);
+	}
+	else if (num == 3) {
+		add(0, type);
+		add(4, type);
+		add(5, type);
+		add(6, type);
+		add(7, type);
+	}
+	else if (num == 4) {
+		add(6, type);
+		add(7, type);
+		add(8, type);
+		add(10, type);
+		add(12, type);
+	}
+	else if (num == 5) {
+		add(0, type);
+		add(2, type);
+		add(14, type);
+		add(15, type);
+	}
+	else if (num == 6) {
+		add(3, type);
+		add(14, type);
+		add(15, type);
+	}
+	else if (num == 7) {
+		add(4, type);
+		add(5, type);
+		add(7, type);
+		add(14, type);
+		add(15, type);
+	}
+	else if (num == 8) {
+		add(1, type);
+		add(2, type);
+		add(3, type);
+		add(4, type);
+		add(5, type);
+	}
+	else if (num == 9) {
+		add(3, type);
+		add(4, type);
+		add(5, type);
+		add(9, type);
+		add(13, type);
+	}
+}
+
+int isFinish()
+{
+	for (int i = 0; i < CLOCK_SIZE; i++) {
+		if (clock[i] < 12)
+			return 0;
+	}
+
+	return 1;
+}
+
+void getCount(int num)
+{
+	for (int i = num; i < BUTTON_SIZE; i++) {
+		if (cnt >= result)
+			continue;
+		else if (isFinish())
+			result = cnt;
+
+		if (buttonCnt[i] < 3) {
+			pushButton(i, ADD);
+			getCount(i);
+			pushButton(i, RMV);
+		}
+	}
+}
+
+void init()
+{
+	result = INF;
+	cnt = 0;
+	for (int i = 0; i < BUTTON_SIZE; i++)
+		buttonCnt[i] = 0;
+}
+void getInput()
+{
+	for (int i = 0; i < CLOCK_SIZE; i++) {
+		scanf("%d", &clock[i]);
+	}
+}
+
+int main(int argc, char **argv)
+{
+	int testcase, T;
+
+	setbuf(stdout, NULL);
+	//freopen("sample_input.txt", "r", stdin);
+
+	scanf("%d", &T);
+
+	for (testcase = 1; testcase <= T; testcase++) {
+		init();
+		getInput();
+
+		getCount(0);
+
+		printf("%d\n", result == INF ? -1 : result);
+	}
+
+	return 0;
+}
