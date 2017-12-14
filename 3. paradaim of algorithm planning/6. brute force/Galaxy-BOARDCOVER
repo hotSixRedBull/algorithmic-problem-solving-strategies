@@ -1,0 +1,80 @@
+#include <stdio.h>
+
+char map[22][22];
+int size_row, size_col, count;
+char dir[8][2] = { { 0, 1 }, { 1, 1 }, { 1, -1 }, { 1, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { 1, 0 } };
+
+void process(int count_white)
+{
+	int r, c, d, tr, tc;
+
+	if (!count_white)
+	{
+		count++;
+		return;
+	}
+
+	for (r = 1; r <= size_row; r++)
+	{
+		for (c = 1; c <= size_col; c++)
+		{
+			if (map[r][c] == 1)
+			{
+				for (d = 0; d < 8; d += 2)
+				{
+					if (map[r + dir[d][0]][c + dir[d][1]] == 1 && map[r + dir[d + 1][0]][c + dir[d + 1][1]] == 1)
+					{
+						map[r][c] = count_white;
+						map[r + dir[d][0]][c + dir[d][1]] = count_white;
+						map[r + dir[d + 1][0]][c + dir[d + 1][1]] = count_white;
+
+						process(count_white - 3);
+
+						map[r][c] = 1;
+						map[r + dir[d][0]][c + dir[d][1]] = 1;
+						map[r + dir[d + 1][0]][c + dir[d + 1][1]] = 1;
+					}
+				}
+				return;
+			}
+		}
+	}
+}
+
+int main()
+{
+	int tc;
+	int r, c, count_white;
+
+	scanf("%d", &tc);
+	while (tc--)
+	{
+		scanf("%d %d ", &size_row, &size_col);
+
+		count = 0;
+		count_white = 0;
+		for (r = 1; r <= size_row; r++)
+		{
+			scanf("%s", &map[r][1]);
+			for (c = 1; c <= size_col; c++)
+			{
+				if (map[r][c] == '#')
+					map[r][c] = 0;
+				else
+				{
+					map[r][c] = 1;
+					count_white++;
+				}
+			}
+			map[r][size_col + 1] = 0;
+		}
+		for (c = 1; c <= size_col; c++)
+			map[size_row + 1][c] = 0;
+
+		process(count_white);
+
+		printf("%d\n", count);
+	}
+
+	return 0;
+}
