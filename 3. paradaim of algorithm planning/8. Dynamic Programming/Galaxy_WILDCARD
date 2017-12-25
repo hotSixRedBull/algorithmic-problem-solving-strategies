@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+#define SIZE 101
+
+string str;
+string pattern;
+string file_name[51];
+int n, cnt;
+int cache[SIZE][SIZE];
+int length_str, length_pattern;
+
+int match(int w, int s)
+{
+	int skip;
+	int& ret = cache[w][s];
+
+	if (ret != -1) return ret;
+	while (s < str.size() && w < pattern.size() && (pattern[w] == '?' || pattern[w] == str[s]))
+	{
+		++w;
+		++s;
+	}
+
+	if (w == pattern.size()) return ret = (s == str.size());
+
+	if (pattern[w] == '*')
+	{
+		for (skip = 0; skip + s <= str.size(); ++skip)
+			if (match(w + 1, s + skip))
+				return ret = 1;
+	}
+	return 0;
+}
+
+int main()
+{
+	int TC;
+	int i, j, k;
+
+	cin >> TC;
+	while (TC--)
+	{
+		cin >> pattern;
+
+		cnt = 0;
+		cin >> n;
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < SIZE; j++)
+				for (k = 0; k < SIZE; k++)
+					cache[j][k] = -1;
+
+			cin >> str;
+
+			if (match(0, 0))
+			{
+				file_name[cnt] = str;
+				cnt++;
+			}
+		}
+
+		for (i = 0; i < cnt - 1; i++)
+		{
+			for (j = 0; j < cnt - 1 - i; j++)
+			{
+				if (file_name[j] > file_name[j + 1])
+				{
+					str = file_name[j];
+					file_name[j] = file_name[j + 1];
+					file_name[j + 1] = str;
+				}
+			}
+		}
+
+		for (i = 0; i < cnt; i++)
+			cout << file_name[i] << endl;
+	}
+
+	return 0;
+}
