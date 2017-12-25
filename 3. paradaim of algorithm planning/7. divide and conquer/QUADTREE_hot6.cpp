@@ -34,7 +34,7 @@ void parse(int* pos,node* cur) {
 			if (str[*pos] == 'x') {
 				cur->child[i] = new node(str[*pos]);
 				parse(pos, cur->child[i]);
-				(*pos)--;//수정;;
+				(*pos)--;
 			}
 			else {
 				cur->child[i] = new node(str[*pos]);
