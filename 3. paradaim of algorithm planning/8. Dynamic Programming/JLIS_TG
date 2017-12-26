@@ -1,0 +1,96 @@
+#include <stdio.h>
+
+#define	SIZE	100
+
+int str1[SIZE], str2[SIZE];
+int dpstr[SIZE + SIZE + 1];
+int dp[SIZE + SIZE + 1];
+int str1size, str2size;
+int result;
+
+void getInput()
+{
+	scanf("%d %d", &str1size, &str2size);
+	for (int i = 0; i < str1size; i++)
+		scanf("%d", &str1[i]);
+	for (int i = 0; i < str2size; i++)
+		scanf("%d", &str2[i]);
+}
+
+int getDP(int value, int idx)
+{
+	int max = 1;
+	for (int j = 1; j < idx; j++) {
+		if (dpstr[j] < value && dp[j] + 1 > max)
+			max = dp[j] + 1;
+	}
+	return max;
+}
+
+void jlis()
+{
+	int str1idx = 0,
+		str2idx = 0;
+
+	for (int i = 1; i <= str1size + str2size; i++) {
+		int tmp;
+		if (str1idx >= str1size) {
+			tmp = str2[str2idx++];
+			dp[i] = getDP(tmp, i);
+			dpstr[i] = tmp;
+		}
+		else if (str2idx >= str2size) {
+			tmp = str1[str1idx++];
+			dp[i] = getDP(tmp, i);
+			dpstr[i] = tmp;
+		}
+		else if (str1[str1idx] < str2[str2idx]) {
+			tmp = str1[str1idx++];
+			dp[i] = getDP(tmp, i);
+			dpstr[i] = tmp;
+		}
+		else if (str1[str1idx] > str2[str2idx]) {
+			tmp = str2[str2idx++];
+			dp[i] = getDP(tmp, i);
+			dpstr[i] = tmp;
+		}
+		else {
+			tmp = str1[str1idx++];
+			dp[i] = getDP(tmp, i);
+			dpstr[i] = tmp;
+			str2idx++;
+			i++;
+		}
+		if (dp[i] > result)
+			result = dp[i];
+	}
+}
+
+void init()
+{
+	for (int i = 0; i <= str1size + str2size; i++)
+		dp[i] = 0;
+	result = 0;
+}
+
+int main(int argc, char **argv)
+{
+	int testcase;
+	setbuf(stdout, NULL);
+	freopen("input.txt", "r", stdin);
+	scanf("%d", &testcase);
+
+	while (testcase--) {
+		getInput();
+		init();
+
+		jlis();
+
+		printf("%d\n", result);
+	}
+
+	return 0;
+}
+
+
+
