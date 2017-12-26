@@ -1,0 +1,96 @@
+#include <stdio.h>
+
+#define	SIZE	10001
+#define INF		1000000
+
+char str[SIZE];
+int strsize;
+int dp[SIZE];
+
+
+void getInput()
+{
+	scanf(" %s", str);
+	for (int i = 0; i <= SIZE; i++) {
+		if (str[i] == 0) {
+			strsize = i;
+			break;
+		}
+	}
+}
+int isLevel1(int start, int end)
+{
+	int tmp = str[start];
+	for (int i = start; i <= end; i++) {
+		if (tmp != str[i])
+			return 0;
+	}
+	return 1;
+}
+int isLevel2(int start, int end)
+{
+	int diff = str[start + 1] - str[start];
+	if (diff != 1 && diff != -1)
+		return 0;
+
+	for (int i = start; i < end; i++) {
+		if (str[i] + diff != str[i + 1])
+			return 0;
+	}
+	return 1;
+}
+int isLevel4(int start, int end)
+{
+	char num[2];
+	num[start % 2] = str[start];
+	num[(start + 1) % 2] = str[start + 1];
+	for (int i = start + 2; i <= end; i++) {
+		if (num[i % 2] != str[i])
+			return 0;
+	}
+	return 1;
+}
+int isLevel5(int start, int end)
+{
+	int diff = str[start + 1] - str[start];
+	for (int i = start; i < end; i++) {
+		if (str[i] + diff != str[i + 1])
+			return 0;
+	}
+	return 1;
+}
+int getLevel(int start, int end)
+{
+	int size = end - start + 1;
+	
+	if (isLevel1(start, end))
+		return 1;
+	else if (isLevel2(start, end))
+		return 2;	
+	else if (isLevel4(start, end))
+		return 4;
+	else if (isLevel5(start, end))
+		return 5;
+	else
+		return 10;
+}
+void init()
+{
+	dp[0] = dp[1] = 10;
+	for (int i = 2; i < 5; i++)
+		dp[i] = getLevel(0, i);
+}
+
+int main(int argc, char **argv)
+{
+	int testcase;
+	setbuf(stdout, NULL);
+	//freopen("input.txt", "r", stdin);
+	scanf("%d", &testcase);
+
+	while (testcase--) {
+		getInput();
+		init();
+
+		for (int i = 5; i < strsize; i++) {
+			int min = dp[i - 3
