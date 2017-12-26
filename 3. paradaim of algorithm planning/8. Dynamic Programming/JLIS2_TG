@@ -1,0 +1,71 @@
+#include <stdio.h>
+
+#define	SIZE	100
+
+int str1[SIZE], str2[SIZE];
+int str1size, str2size;
+int cache[SIZE + 1][SIZE + 1];
+
+int returnMax(int a, int b)
+{
+	return a > b ? a : b;
+}
+void getInput()
+{
+	scanf("%d %d", &str1size, &str2size);
+	for (int i = 0; i < str1size; i++)
+		scanf("%d", &str1[i]);
+	for (int i = 0; i < str2size; i++)
+		scanf("%d", &str2[i]);
+}
+
+int jlis(int idx1, int idx2)
+{
+	if (cache[idx1][idx2] > -1)
+		return cache[idx1][idx2];
+	
+	int result = 2;
+	int num1 = str1[idx1],
+		num2 = str2[idx2];
+
+	int max = num1 > num2 ? num1 : num2;
+
+	for (int i = idx1 + 1; i < str1size; i++) {
+		if (max < str1[i])
+			result = returnMax(result, jlis(i, idx2) + 1);
+	}
+	for (int i = idx2 + 1; i < str2size; i++) {
+		if (max < str2[i])
+			result = returnMax(result, jlis(idx1, i) + 1);
+	}
+
+	return result;
+}
+
+void init()
+{
+	for (int i = 0; i <= str1size; i++)
+		for (int j = 0; j <= str2size; j++)
+			cache[i][j] = -1;
+}
+
+int main(int argc, char **argv)
+{
+	int testcase;
+	setbuf(stdout, NULL);
+	freopen("input.txt", "r", stdin);
+	scanf("%d", &testcase);
+
+	while (testcase--) {
+		getInput();
+		init();
+
+		for (int i = 0; i < str1size; i++)
+			for (int j = 0; j < str2size; j++)
+				cache[i][j] = jlis(i, j);
+
+		printf("%d\n", cache[str1size - 1][str2size - 1]);
+	}
+
+	return 0;
+}
