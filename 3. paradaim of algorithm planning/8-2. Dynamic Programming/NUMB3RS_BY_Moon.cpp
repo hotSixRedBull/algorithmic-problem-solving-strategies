@@ -14,22 +14,22 @@ int main() {
 
 	for (int t = 1; t <= tc; t++) {
 		scanf("%d %d %d", &N, &D, &P);
-
 		for (int i = 0; i < N; i++) {
 			roadCnt[i] = 0;
 			for (int j = 0; j < N; j++) {
 				scanf("%d", &road[i][j]);
-				cache[i][j] = -1;
 				if (road[i][j] == 1) {
 					roadCnt[i]++;
 				}
+			}
+			for (int k = 0; k <= D; k++) {
+				cache[i][k] = -1;
 			}
 		}
 		scanf("%d", &T);
 		for (int i = 0; i < T; i++) {
 			scanf("%d", &Q);
-			getProbability(D, Q, N, P);
-			printf("%.8lf ", cache[Q][D]);
+			printf("%.8lf ", getProbability(D, Q, N, P));
 		}printf("\n");
 	}
 }
