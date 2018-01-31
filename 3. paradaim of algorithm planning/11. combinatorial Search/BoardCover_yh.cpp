@@ -58,6 +58,7 @@ void getRotatedBlock() {
 	int xSize = C, ySize = R;
 	int stdX, stdY;
 	int cnt;
+	int temp;
 	for (int i = 0; i < 4; i++) {
 		cnt = 0;
 		stdX = -1, stdY = -1;
@@ -77,23 +78,58 @@ void getRotatedBlock() {
 			}
 			blockSize = cnt;
 		}
-		int temp;
+
 		temp = xSize;
 		xSize = ySize;
 		ySize = temp;
 	}
-	totalType = 4;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < blockSize; j++) {
+			for (int k = j; k < blockSize; k++) {
+				if (relativeBlock[i][j][0] > relativeBlock[i][k][0]) {
+					temp = relativeBlock[i][j][0];
+					relativeBlock[i][j][0] = relativeBlock[i][k][0];
+					relativeBlock[i][k][0] = temp;
+					temp = relativeBlock[i][j][1];
+					relativeBlock[i][j][1] = relativeBlock[i][k][1];
+					relativeBlock[i][k][1] = temp;
+				}
+			}
+		}
+	}
+	int check[2] = { 0,0 };
+	for (int j = 0; j < blockSize; j++) {
+		if (relativeBlock[0][j][0] == relativeBlock[1][j][0]) {
+			check[0]++;
+		}
+		if (relativeBlock[0][j][0] == relativeBlock[2][j][0]) {
+			check[1]++;
+		}
+	}
+	if (check[0] == blockSize) {
+		totalType = 1;
+	}
+	else if (check[1] == blockSize) {
+		totalType = 2;
+	}
 }
 
 
 void boardCover(int curX, int curY, int whiteBlock, int curBoardCnt) {
 	if (maxBlock < curBoardCnt) {
+		printf("____________________________________________\n");
+		for (int y = 0; y < H; y++) {
+			for (int x = 0; x < W; x++) {
+				printf("%4d", map[y][x]);
+			}printf("\n");
+		}
 		maxBlock = curBoardCnt;
 	}
-	if (whiteBlock / blockSize == 0 || blockSize != 0 && ((whiteBlock / blockSize) <= (maxBlock - curBoardCnt))) {
+	if (blockSize != 0 && ((whiteBlock / blockSize) + curBoardCnt <= (maxBlock))) {
 		return;
 	}
-	if (curY + ((R > C ? C : R)-1) > H) {
+	if (curY> H) {
+
 		return;
 	}
 
@@ -103,12 +139,7 @@ void boardCover(int curX, int curY, int whiteBlock, int curBoardCnt) {
 				for (int j = 0; j < blockSize; j++) {
 					map[curY + relativeBlock[i][j][1]][curX + relativeBlock[i][j][0]] = curBoardCnt + 1;
 				}
-					printf("____________________________________________\n");
-					for (int y = 0; y < H; y++) {
-						for (int x = 0; x < W; x++) {
-							printf("%d ", map[y][x]);
-						}printf("\n");
-					}
+
 				boardCover((curX + 1) % W, curY + (curX + 1) / W, whiteBlock - blockSize, curBoardCnt + 1);
 				for (int j = 0; j < blockSize; j++) {
 					map[curY + relativeBlock[i][j][1]][curX + relativeBlock[i][j][0]] = 0;
@@ -116,7 +147,7 @@ void boardCover(int curX, int curY, int whiteBlock, int curBoardCnt) {
 			}
 		}
 	}
-	boardCover((curX + 1) % W, curY + (curX + 1) / W, whiteBlock, curBoardCnt);
+	boardCover((curX + 1) % W, curY + (curX + 1) / W, map[curY][curX] == 0 ? whiteBlock - 1 : whiteBlock, curBoardCnt);
 
 	return;
 }
